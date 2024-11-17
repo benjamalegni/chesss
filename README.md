@@ -1,3 +1,6 @@
+# chess-react
+chess program made with react, intending to implement AI to make gameplay interesting
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
