@@ -7,7 +7,7 @@ const N = 8;
 const xAxis = ["a","b","c","d","e","f","g","h"];
 const yAxis = ["1","2","3","4","5","6","7","8"];
 
-interface Piece{
+export interface Piece{
     image: string
     x: number
     y: number
@@ -137,7 +137,7 @@ function dropPiece(e: React.MouseEvent){
             const pieces = value.map((p)=>{
                 if(p.x === xAxis && p.y ===yAxis){
                     // referee checks if move is valid
-                    const validMove = referee.isValidMove(xAxis, yAxis, x, y, p.type, p.team);
+                    const validMove = referee.isValidMove(xAxis, yAxis, x, y, p.type, p.team, value);
  
                     if(validMove){
                         p.x=x;
