@@ -125,58 +125,7 @@ export default class Referee{
     }
 
     queenMove(initialPosition:Position, desiredPosition: Position, team:TeamType,dx:number, dy:number, stepX:number, stepY:number, boardState:Piece[]):boolean{
-            // if vertical movement
-            if (dx === 0){
-                // iterate all positions between actual position and desired position dy
-                for (let i = 1; i < Math.abs(dy); i++) {
-                    // maintain x position and iterate y axis from initial position to desiredPosition multiplying by its direction
-                    const passedPosition: Position = {
-                        x: initialPosition.x,
-                        y: initialPosition.y + i * stepY,
-                    };
-
-                    // if any intermediate tile is occupied, then is invalid
-                    if (this.tileIsOccupied(passedPosition, boardState)) {
-                        return false;
-                    }
-                }
-            } else if (dy === 0) /* if horizontal movement*/{
-
-                // iterate all positions between actual position and desired position dx
-                for (let i = 1; i < Math.abs(dx); i++) {
-                    // maintain y position and iterate x axis from initial position to desiredPosition multiplying by its direction
-                    const passedPosition: Position = {
-                        x: initialPosition.x + i * stepX,
-                        y: initialPosition.y,
-                    };
-
-                    // if any intermediate tile is occupied, then is invalid
-                    if (this.tileIsOccupied(passedPosition, boardState)) {
-                        return false;
-                    }
-                }
-            } else if(Math.abs(dx) === Math.abs(dy)) /* if diagonal movement*/{
-
-                // iterate all positions between actual position and desired position (dx or dy)
-                for (let i = 1; i < Math.abs(dx); i++) {
-                    // change passedPosition in each iteration and multiply with step depending on each of the 4 directions is heading
-                    const passedPosition: Position = {
-                        x: initialPosition.x + i * stepX,
-                        y: initialPosition.y + i * stepY,
-                    };
-
-                    // if any intermediate tile is occupied, then is invalid
-                    if (this.tileIsOccupied(passedPosition, boardState)) {
-                        return false;
-                    }
-                }
-            } else /* desired movement is not vertical nor horinzontal nor diagonal*/{
-                return false;
-            }
-
-            // return true (if is not occupied by our team) or (is ocuppied by opponent)
-            return !this.tileIsOccupied(desiredPosition, boardState) ||
-                this.tileIsOccupiedByOpponent(desiredPosition, boardState, team);
+        return (this.bishopMove(initialPosition, desiredPosition, team, dx, dy, stepX, stepY, boardState) || this.rookMove(initialPosition, desiredPosition, team, dx, dy, stepX, stepY, boardState));
     }
 
     kingMove(initialPosition:Position, desiredPosition: Position, team:TeamType,dx:number, dy:number, stepX:number, stepY:number, boardState:Piece[]):boolean{
@@ -216,5 +165,6 @@ export default class Referee{
             return this.kingMove(initialPosition, desiredPosition, team, dx, dy, stepX, stepY, boardState);
             }
         }
+
     }
 }
