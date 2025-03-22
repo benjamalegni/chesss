@@ -25,44 +25,41 @@ export default class Referee{
         return false;
     }
 
-    isValidMove(initialPosition:Position, desiredPosition: Position, type:PieceType, team:TeamType, boardState:Piece[]){
-        console.log(`referee checking.. piece: ${type}`);
-        //movement
-        const dx = desiredPosition.x - initialPosition.x; // difference in X axis
-        const dy = desiredPosition.y - initialPosition.y; // difference in Y axis
-        const stepX = dx > 0 ? 1 : -1; // direction of X axis: 1 or -1
-        const stepY = dy > 0 ? 1 : -1; // direction of Y axis: 1 or -1
-
-
-        if(type === PieceType.PAWN){
+    pawnMove(initialPosition:Position, desiredPosition: Position, team:TeamType,dx:number, dy:number, boardState:Piece[]):boolean{
             const specialRow = (team === TeamType.OUR)?1:6;
             const pawnDirection = (team === TeamType.OUR)? 1:-1;
 
-            if(initialPosition.x===desiredPosition.x && initialPosition.y===specialRow && desiredPosition.y-initialPosition.y===2*pawnDirection){
+            if(initialPosition.x===desiredPosition.x && initialPosition.y===specialRow && dy===2*pawnDirection){
                 if(!this.tileIsOccupied(desiredPosition,boardState) && !this.tileIsOccupied({x: desiredPosition.x, y:desiredPosition.y-pawnDirection}, boardState)){
                     return true;
                 }
-            }else if(initialPosition.x===desiredPosition.x && desiredPosition.y-initialPosition.y===pawnDirection){
+            }else if(initialPosition.x===desiredPosition.x && dy===pawnDirection){
                     return !this.tileIsOccupied(desiredPosition,boardState)
             }
             //attack
-            else if(desiredPosition.y-initialPosition.y===pawnDirection && ((desiredPosition.x-initialPosition.x===-1) || (desiredPosition.x-initialPosition.x===1))){
+            else if(dy===pawnDirection && ((dx===-1) || (dx===1))){
                 return this.tileIsOccupiedByOpponent(desiredPosition,boardState,team);
             }
-        } else if(type === PieceType.KNIGHT){
-            // moving mechanics
-            // 8 different tiles possible
+        return false;
+    }
 
-            const knightX = [1,2,2,1,-1,-2,-2,-1];
-            const knightY = [2,1,-1,-2,-2,-1,1,2];
 
-            for(let i=0;i<8;i++){
-                if((desiredPosition.x - initialPosition.x === knightX[i]) && (desiredPosition.y - initialPosition.y === knightY[i])){
-                    return (!this.tileIsOccupied(desiredPosition,boardState) || this.tileIsOccupiedByOpponent(desiredPosition,boardState, team))
-                } 
+    knightMove(initialPosition: Position, desiredPosition: Position, team: TeamType, dx: number, dy: number, boardState: Piece[]): boolean {
+        // moving mechanics
+        // 8 different tiles possible
+
+        const knightX = [1, 2, 2, 1, -1, -2, -2, -1];
+        const knightY = [2, 1, -1, -2, -2, -1, 1, 2];
+
+        for (let i = 0; i < 8; i++) {
+            if ((dx === knightX[i]) && (dy === knightY[i])) {
+                return (!this.tileIsOccupied(desiredPosition, boardState) || this.tileIsOccupiedByOpponent(desiredPosition, boardState, team))
             }
-        } else if (type === PieceType.BISHOP) {
+        }
+        return false;
+    }
 
+    bishopMove(initialPosition:Position, desiredPosition: Position, team:TeamType,dx:number, dy:number, stepX:number, stepY:number, boardState:Piece[]):boolean{
             // diagonal movement implies that difference between axis should be equal
             if (Math.abs(dx) === Math.abs(dy)) {
 
@@ -84,8 +81,10 @@ export default class Referee{
                 return !this.tileIsOccupied(desiredPosition, boardState) ||
                     this.tileIsOccupiedByOpponent(desiredPosition, boardState, team);
             }
-        } else if (type === PieceType.ROOK) {
+        return false;
+    }
 
+    rookMove(initialPosition:Position, desiredPosition: Position, team:TeamType,dx:number, dy:number, stepX:number, stepY:number, boardState:Piece[]):boolean{
             // vertical movement
             if (dx === 0){
                 // iterate all positions between actual position and desired position dy
@@ -101,7 +100,8 @@ export default class Referee{
                         return false;
                     }
                 }
-            } else if (dy === 0) {
+            } // horizontal movement
+            else if (dy === 0) {
                 // iterate all positions between actual position and desired position dx
                 for (let i = 1; i < Math.abs(dx); i++) {
                     // maintain y position and iterate x axis from initial position to desiredPosition multiplying by its direction
@@ -115,17 +115,16 @@ export default class Referee{
                         return false;
                     }
                 }
-            } else{
-                // if its not vertical nor horizontal movement
-                return false;
-            }
+            } else {
+            // if its not vertical nor horizontal movement
+            return false;
+        }
+                // return true (if is not occupied by our team) or (is ocuppied by opponent)
+                return !this.tileIsOccupied(desiredPosition, boardState) ||
+                    this.tileIsOccupiedByOpponent(desiredPosition, boardState, team);
+    }
 
-            // return true (if is not occupied by our team) or (is ocuppied by opponent)
-            return !this.tileIsOccupied(desiredPosition, boardState) ||
-                this.tileIsOccupiedByOpponent(desiredPosition, boardState, team);
-
-        } else if (type === PieceType.QUEEN) {
-
+    queenMove(initialPosition:Position, desiredPosition: Position, team:TeamType,dx:number, dy:number, stepX:number, stepY:number, boardState:Piece[]):boolean{
             // if vertical movement
             if (dx === 0){
                 // iterate all positions between actual position and desired position dy
@@ -178,15 +177,44 @@ export default class Referee{
             // return true (if is not occupied by our team) or (is ocuppied by opponent)
             return !this.tileIsOccupied(desiredPosition, boardState) ||
                 this.tileIsOccupiedByOpponent(desiredPosition, boardState, team);
+    }
 
-
-        } else if(type === PieceType.KING){
+    kingMove(initialPosition:Position, desiredPosition: Position, team:TeamType,dx:number, dy:number, stepX:number, stepY:number, boardState:Piece[]):boolean{
             //one tile movement
             if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1){
                 return (!this.tileIsOccupied(desiredPosition, boardState) || this.tileIsOccupiedByOpponent(desiredPosition, boardState, team));
             }
-        }
-
         return false;
+    }
+
+
+    isValidMove(initialPosition:Position, desiredPosition: Position, type:PieceType, team:TeamType, boardState:Piece[]){
+        console.log(`referee checking.. piece: ${type}`);
+        //movement
+        const dx = desiredPosition.x - initialPosition.x; // difference in X axis
+        const dy = desiredPosition.y - initialPosition.y; // difference in Y axis
+        const stepX = dx > 0 ? 1 : -1; // direction of X axis: 1 or -1
+        const stepY = dy > 0 ? 1 : -1; // direction of Y axis: 1 or -1
+
+        switch(type){
+            case PieceType.PAWN:{
+            return this.pawnMove(initialPosition, desiredPosition, team, dx, dy, boardState);
+            }
+            case PieceType.KNIGHT:{
+            return this.knightMove(initialPosition, desiredPosition, team, dx, dy, boardState);
+            }
+            case PieceType.BISHOP:{
+            return this.bishopMove(initialPosition, desiredPosition, team, dx, dy, stepX, stepY, boardState);
+            }
+            case PieceType.ROOK:{
+            return this.rookMove(initialPosition, desiredPosition, team, dx, dy, stepX, stepY, boardState);
+            }
+            case PieceType.QUEEN:{
+            return this.queenMove(initialPosition, desiredPosition, team, dx, dy, stepX, stepY, boardState);
+            }
+            case PieceType.KING:{
+            return this.kingMove(initialPosition, desiredPosition, team, dx, dy, stepX, stepY, boardState);
+            }
+        }
     }
 }
