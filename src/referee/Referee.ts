@@ -28,6 +28,12 @@ export default class Referee{
     isValidMove(initialPosition:Position, desiredPosition: Position, type:PieceType, team:TeamType, boardState:Piece[]){
         console.log(`referee checking.. piece: ${type}`);
         //movement
+        const dx = desiredPosition.x - initialPosition.x; // difference in X axis
+        const dy = desiredPosition.y - initialPosition.y; // difference in Y axis
+        const stepX = dx > 0 ? 1 : -1; // direction of X axis: 1 or -1
+        const stepY = dy > 0 ? 1 : -1; // direction of Y axis: 1 or -1
+
+
         if(type === PieceType.PAWN){
             const specialRow = (team === TeamType.OUR)?1:6;
             const pawnDirection = (team === TeamType.OUR)? 1:-1;
@@ -56,13 +62,9 @@ export default class Referee{
                 } 
             }
         } else if (type === PieceType.BISHOP) {
-            const dx = desiredPosition.x - initialPosition.x; // difference in X axis
-            const dy = desiredPosition.y - initialPosition.y; // difference in Y axis
 
             // diagonal movement implies that difference between axis should be equal
             if (Math.abs(dx) === Math.abs(dy)) {
-                const stepX = dx > 0 ? 1 : -1; // direction of X axis: 1 or -1
-                const stepY = dy > 0 ? 1 : -1; // direction of Y axis: 1 or -1
 
                 // iterate all positions between actual position and desired position (dx or dy)
                 for (let i = 1; i < Math.abs(dx); i++) {
@@ -83,13 +85,9 @@ export default class Referee{
                     this.tileIsOccupiedByOpponent(desiredPosition, boardState, team);
             }
         } else if (type === PieceType.ROOK) {
-            const dx = desiredPosition.x - initialPosition.x; // difference in X axis
-            const dy = desiredPosition.y - initialPosition.y; // difference in Y axis
 
             // vertical movement
             if (dx === 0){
-                const stepY = dy > 0 ? 1 : -1; // direction of Y axis: 1 or -1
-
                 // iterate all positions between actual position and desired position dy
                 for (let i = 1; i < Math.abs(dy); i++) {
                     // maintain x position and iterate y axis from initial position to desiredPosition multiplying by its direction
@@ -104,9 +102,6 @@ export default class Referee{
                     }
                 }
             } else if (dy === 0) {
-                // horizontal movement
-                const stepX = dx > 0 ? 1 : -1; // direction of X axis: 1 or -1
-
                 // iterate all positions between actual position and desired position dx
                 for (let i = 1; i < Math.abs(dx); i++) {
                     // maintain y position and iterate x axis from initial position to desiredPosition multiplying by its direction
@@ -130,11 +125,6 @@ export default class Referee{
                 this.tileIsOccupiedByOpponent(desiredPosition, boardState, team);
 
         } else if (type === PieceType.QUEEN) {
-            const dx = desiredPosition.x - initialPosition.x; // difference in X axis
-            const dy = desiredPosition.y - initialPosition.y; // difference in Y axis
-
-            const stepX = dx > 0 ? 1 : -1; // direction of X axis: 1 or -1
-            const stepY = dy > 0 ? 1 : -1; // direction of Y axis: 1 or -1
 
             // if vertical movement
             if (dx === 0){
@@ -191,7 +181,10 @@ export default class Referee{
 
 
         } else if(type === PieceType.KING){
-
+            //one tile movement
+            if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1){
+                return (!this.tileIsOccupied(desiredPosition, boardState) || this.tileIsOccupiedByOpponent(desiredPosition, boardState, team));
+            }
         }
 
         return false;
