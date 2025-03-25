@@ -79,7 +79,7 @@ function dropPiece(e: React.MouseEvent){
 
         if(currentPiece){
             const validMove = referee.isValidMove(grabPosition, {x,y}, currentPiece.type,currentPiece.team, pieces);
-            const isEnPassantMove = referee.isEnPassantMove(grabPosition, {x,y},currentPiece.type,currentPiece.team, pieces)
+            const isEnPassantMove = Referee.isEnPassantMove(grabPosition, {x,y},currentPiece.type,currentPiece.team, pieces)
             const pawnDirecion = currentPiece.team === TeamType.OUR?1:-1;
 
             if(isEnPassantMove){
