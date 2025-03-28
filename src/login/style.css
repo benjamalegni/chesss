@@ -1,0 +1,164 @@
+
+body{
+  margin:0;
+  padding:0;
+  font-family:'Inter';
+  font-size:55px;
+  background:linear-gradient(195deg,#ff2281, #011ffd);
+  height:100vh;
+  animation:gradient-background 7s infinite alternate;
+  background-size:400%;
+  background-repeat: no-repeat;
+}
+
+@keyframes gradient-background{
+  0%{background-position: left;}
+  100%{background-position:right}
+}
+
+h1{
+  margin:31px 0px 0px 6px ;
+}
+
+#title{
+  color:#fff;
+  font-size: 110px;
+  letter-spacing: -0.4rem;
+  margin: 6px 2px 2px 2px;
+  top:-6px;
+  left:6px;
+  
+  position:relative;
+  padding-right:20px;
+  border:none;
+
+}
+
+span::before{
+  margin:6px 0px 0px 6px;
+  content:"CHESSS";
+  left:3px;
+  inset:0;
+  position:absolute;
+  background:linear-gradient(90deg, #ff2281, #011ffd);
+  letter-spacing: -0.4rem;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation:title-animate 8s infinite;
+  animation-direction: alternate;
+}
+  /** FOR SPAN::BEFORE: transform:skewY(10deg);*/
+
+
+@keyframes title-animate{
+  0%{opacity:0}
+  72%{opacity: 0;}
+  78%{opacity: 1;}
+}
+
+hr{
+  opacity: .5;
+}
+
+.div_input{
+  height: 20px;
+  width: 270px;
+  background-color: #ddd;
+  border-radius:4px;
+  transition: all 1s;
+  border:none;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: .1em;
+  margin:0px;
+  position: relative;
+  left:19%;
+  top:-10px;
+}
+
+
+#container{
+  height:550px;
+  width:450px;
+  justify-content: center;
+  border:solid #fff 3px;
+  border-radius:17px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  background-color:#000;
+  margin:50px auto;
+  overflow:hidden;
+  align-content:center;
+  position:relative;
+  top:10%;
+}
+
+#terms{
+  line-height: -20px;
+  color:#fff;
+  font-size:15px;
+  letter-spacing: 3px;
+  font-weight: 200;
+  display:block;
+  margin:35px 10px 10px 10px;
+}
+
+label::after{
+content:"ACEPTO QUE DESDE EL DIA PRESENTE MI ALMA PERTEZCA A SATANAS";
+font-size:16px;
+font-family: Verdana, Geneva, Tahoma, sans-serif;
+letter-spacing: -.6px;
+}
+
+#terms:hover{
+  color:#f00;
+}
+
+#terms_input{
+  transform:scale(2);
+  margin:8px;
+  background-color:#f00;
+}
+
+
+#div_button{
+  height: 36px;
+  width: 200px;
+  font-weight:500;
+  padding:2px 2px 2px 9px;
+  font-size: 18px;
+  border-radius:6px;
+  letter-spacing: .3em;
+  background-color:#FCFBF4;
+  position: relative;
+  color:rgba(0,0,0,0.7);
+  left:121px;
+  font-family:'Inter', arial;
+
+}
+
+
+#div_button:active{
+  background-color:#00B9D3;
+  outline: solid #fff 1px;
+  filter: blur(.8);
+}
+
+@media (max-width: 600px){
+  body{
+    background-repeat: repeat;
+    background-size:.5%;
+    animation:gradient-background 3s infinite alternate;
+    }
+  #container{
+    width:400px;
+    height:600px;}
+  #title{
+    margin-left:-22px;
+  }
+  .div_input{
+    left:16%;
+    }
+  #div_button{
+    left:99px;
+  }
+}
