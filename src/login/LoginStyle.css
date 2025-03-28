@@ -1,10 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap');
 
 body{
   margin:0;
   padding:0;
   font-family:'Inter';
   font-size:55px;
-  background:linear-gradient(195deg,#ff2281, #011ffd);
+  /*background:linear-gradient(195deg,#ff2281, #011ffd);*/
+  background-color: #222;
   height:100vh;
   animation:gradient-background 7s infinite alternate;
   background-size:400%;
@@ -21,6 +23,7 @@ h1{
 }
 
 #title{
+  font-family:'Inter';
   color:#fff;
   font-size: 110px;
   letter-spacing: -0.4rem;
@@ -83,7 +86,7 @@ hr{
   justify-content: center;
   border:solid #fff 3px;
   border-radius:17px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  box-shadow: 0 30px 50px rgba(255, 255, 255, 0.376), 0 6px 6px rgba(255, 255, 255, 0.54);
   background-color:#000;
   margin:50px auto;
   overflow:hidden;

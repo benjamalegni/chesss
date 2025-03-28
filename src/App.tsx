@@ -1,10 +1,10 @@
 import './App.css';
-import Chessboard from './components/Chessboard/Chessboard';
+import LoginComponent from './login/LoginComponent';
 
 function App() {
   return (
-    <div className="Chess" id="app">
-      <Chessboard/>
+    <div>
+     <LoginComponent/> 
     </div>
   );
 }
