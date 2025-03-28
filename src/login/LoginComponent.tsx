@@ -46,7 +46,7 @@ const LoginComponent: React.FunctionComponent= () => {
             <input
               className="div_input div_input-hover"
               type="text"
-              placeholder="TU NOMBRE"
+              placeholder="NAME"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -54,7 +54,7 @@ const LoginComponent: React.FunctionComponent= () => {
             <input
               className="div_input"
               type="password"
-              placeholder="CONTRASEÑA"
+              placeholder="PASSWORD"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
