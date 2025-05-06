@@ -1,11 +1,9 @@
 import './App.css';
-import LoginComponent from './login/LoginComponent';
+import GameComps from './components/GameComps/GameComps';
 
 function App() {
   return (
-    <div>
-     <LoginComponent/> 
-    </div>
+      <GameComps/>
   );
 }
 

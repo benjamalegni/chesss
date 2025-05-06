@@ -1,8 +1,8 @@
 .tile{
     display:grid;
     place-content: center;
-    height: 100px;
-    width: 100px;
+    height: 95px;
+    width: 95px;
 }
 
 .b_tile{
@@ -27,4 +27,14 @@
 
 .tile .chess-piece:hover{
     cursor:grab
+}
+
+
+
+.tile-highlight::before{
+    content:' ';
+    height:30px;
+    width:30px;
+    border-radius: 100%;
+    background-color: black;
 }

@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap');
+
+body{
+  margin:0;
+  padding:0;
+  font-family:'Inter';
+  font-size:55px;
+  /*background:linear-gradient(195deg,#ff2281, #011ffd);*/
+  background-color: #222;
+  height:100vh;
+  animation:gradient-background 7s infinite alternate;
+  background-size:400%;
+  background-repeat: no-repeat;
+}
+
+@keyframes gradient-background{
+  0%{background-position: left;}
+  100%{background-position:right}
+}
+
+h1{
+  margin:0px 0px 0px 6px ;
+}
+
+  /** FOR SPAN::BEFORE: transform:skewY(10deg);*/
+
+
+@keyframes title-animate{
+  0%{opacity:0}
+  72%{opacity: 0;}
+  78%{opacity: 1;}
+}
+
+hr{
+  opacity: .5;
+}
+
+.div_input{
+  height: 3vh;
+  width: 520px;
+  background-color: #ddd;
+  border-radius:4px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.1em;
+  margin-top:10px;
+  justify-self: center;
+}
+
+
+#container{
+  height:790px;
+  width:37vw;
+  justify-content: center;
+  border:solid #fff 3px;
+  border-radius:17px;
+  box-shadow: 0 30px 50px rgba(255, 255, 255, 0.376), 0 6px 6px rgba(255, 255, 255, 0.54);
+  background-color:#000;
+  margin:50px ;
+  overflow:hidden;
+  align-content:center;
+}
+
+
+#div_button{
+  height: 14vh;
+  width: 28vw;
+  font-weight:500;
+  font-size: 90px;
+  background-color:#FCFBF4;
+  color:inherit;
+  font-family:'Inter', arial;
+  justify-self: center;
+  margin-bottom: -10px;
+  margin-top: 60px;
+}
+
+
+#div_button:active{
+  background-color:black;
+  outline: solid #fff 1px;
+  filter: blur(.8);
+  color: #FCFBF4;
+}
+
+@media (max-width: 600px){
+  body{
+    background-repeat: repeat;
+    background-size:.5%;
+    animation:gradient-background 3s infinite alternate;
+    }
+  #container{
+    width:400px;
+    height:600px;}
+  #title{
+    margin-left:-22px;
+  }
+  .div_input{
+    left:16%;
+    }
+  #div_button{
+    left:99px;
+  }
+}
+
+
+.form{
+  display:grid;
+  justify-content: center;
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-top:50px;
+  padding-top:100px;
+  padding:50px;
+}
+
+.title{
+  display:flex;
+  justify-content: center;
+}

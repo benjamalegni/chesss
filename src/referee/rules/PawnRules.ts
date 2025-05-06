@@ -20,3 +20,13 @@ import Referee from "../Referee"
         return false;
     }
 
+export const GetPossiblePawnMoves = (piece:Piece, boardState : Piece[]):Position[] => {
+    const possibleMoves:Position [] = [];
+    const pawnDirection = (piece.team === TeamType.OUR)? 1:-1;
+    
+    if(!Referee.tileIsOccupied({x:piece.position.x ,y: piece.position.y + pawnDirection}, boardState)){
+        possibleMoves.push({x:piece.position.x, y:piece.position.y + pawnDirection});
+    }
+
+    return possibleMoves;
+}

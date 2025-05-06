@@ -1,5 +1,5 @@
 import { PieceType, TeamType, Piece, Position, samePosition} from "../Constants";
-import { pawnMove } from "./rules/PawnRules";
+import { GetPossiblePawnMoves,pawnMove } from "./rules/PawnRules";
 import { knightMove } from "./rules/KnightRules";
 import { bishopMove } from "./rules/BishopRules";
 import { rookMove } from "./rules/RookRules";
@@ -28,6 +28,11 @@ export default class Referee{
         }
         return false;
     }
+
+//pawn promotion
+
+
+
 
     isValidMove(initialPosition:Position, desiredPosition: Position, type:PieceType, team:TeamType, boardState:Piece[]){
         console.log(`referee checking.. piece: ${type}`);
@@ -59,4 +64,19 @@ export default class Referee{
         }
 
     }
+ 
+    getValidMoves(piece:Piece, boardState:Piece[]) : Position[]{
+        switch(piece.type){
+            case PieceType.PAWN:
+                return GetPossiblePawnMoves(piece,boardState);
+
+            default:
+                return [];
+        }       
+
+
+    }
+
 }
+
+

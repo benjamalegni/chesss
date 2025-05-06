@@ -2,7 +2,58 @@
     display:grid;
     grid-template-columns: repeat(8,100px);
     grid-template-rows: repeat(8,100px);
-    width: 800px;
-    height:800px;
-    background-color: blue;
+    width: 795px;
+    height:795px;
+    margin:5vh;
+    /*background:linear-gradient(195deg,#ff2281, #011ffd);
+    animation:gradient-background 4s infinite alternate;
+    background-size:400%;
+    background-repeat: no-repeat;
+    */
+background-color: black;
+}
+
+
+#pawn-promotion-modal > .modal-body{
+    height:150;
+    width:605px;
+    position:absolute;
+    top:calc(50% - 150px);
+    left: calc(72% - 150px);
+    background-color:blue; 
+    padding:10px;
+    margin:5px;
+    display:flex;
+    justify-content: space-between;
+}
+
+#pawn-promotion-modal::before{
+    position:absolute;
+    color:white;
+    margin: 4vh;
+    left:-30px;
+    top:-50px;
+}
+
+#pawn-promotion-modal > .modal-body > img{
+     height: 150px;
+     border: 10px;
+    margin:1px;
+
+}
+
+#pawn-promotion-modal > .modal-body > :hover{
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+}
+
+#pawn-promotion-modal{
+    height: 100%;
+    width: 100%;
+    position:absolute;
+    
+}
+
+#pawn-promotion-modal.hidden{
+    display:none;
 }

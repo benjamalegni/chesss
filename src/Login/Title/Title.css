@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap');
+
+#title{
+  font-family:'Inter';
+  color:#fff;
+  font-size: 220px;
+  letter-spacing: -0.4rem;
+  border:none;
+  margin-left:-12px;
+  margin-bottom: -22px;
+}
+
+
+/*span::before{
+  margin:6px 0px 0px 6px;
+  content:"CHESSS";
+  left:5px;
+  inset:0;
+  position:absolute;
+  background:linear-gradient(90deg, #ff2281, #011ffd);
+  letter-spacing: -0.4rem;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation:title-animate 8s infinite;
+  animation-direction: alternate;
+}
+  /** FOR SPAN::BEFORE: transform:skewY(10deg);*/
+

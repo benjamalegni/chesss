@@ -1,0 +1,9 @@
+#component{
+    height:100vh;
+    display:flex;
+    margin: 10px;
+    background-color: black;
+
+    justify-content:space-between;
+    border-radius: 20px;
+}

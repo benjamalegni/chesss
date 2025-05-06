@@ -1,7 +1,7 @@
-#app {
-  display: grid;
-  place-content: center;
-  height: 100vh;
-
-  background-color: #202020;
+#root{
+    padding:1px;
+    background:linear-gradient(195deg,#000000, #ffffff);
+    animation:gradient-background 4s infinite alternate;
+    background-size:600%;
+    background-repeat: no-repeat;
 }
