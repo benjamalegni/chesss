@@ -33,8 +33,10 @@
 
 .tile-highlight::before{
     content:' ';
-    height:30px;
-    width:30px;
+    position: relative;
+    height:20px;
+    width:20px;
     border-radius: 100%;
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.7);
 }
+

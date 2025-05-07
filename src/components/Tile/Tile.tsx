@@ -10,11 +10,10 @@ interface Props{
 
 export default function Tile({isEven, image, highlight}:Props){
     const className : string = ["tile", 
-                                isEven && "b_tile",
-                                !isEven && "w_tile",
-                                highlight && "tile-highlight"].filter(Boolean).join(' ');
-
-
+                                isEven ? "b_tile" : "w_tile",
+                                highlight && "tile-highlight",
+                                image && "chess-piece"
+                            ].filter(Boolean).join(' ');
 
     return <div className={className}> 
                     {image && <div style={{ backgroundImage: `url(${image})` }} className="chess-piece"></div>}

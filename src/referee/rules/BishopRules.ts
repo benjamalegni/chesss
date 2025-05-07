@@ -1,6 +1,11 @@
 import { Piece, Position, TeamType } from "../../Constants";
 import Referee from "../Referee"
 
+
+// bishop moves
+const bishopX = [1, 1, -1, -1];
+const bishopY = [1, -1, 1, -1];
+
 export const bishopMove=(initialPosition:Position, desiredPosition: Position, team:TeamType,dx:number, dy:number, stepX:number, stepY:number, boardState:Piece[]):boolean=>{
             // diagonal movement implies that difference between axis should be equal
             if (Math.abs(dx) === Math.abs(dy)) {
@@ -24,4 +29,39 @@ export const bishopMove=(initialPosition:Position, desiredPosition: Position, te
                     Referee.tileIsOccupiedByOpponent(desiredPosition, boardState, team);
             }
         return false;
+        }
+
+
+export const GetPossibleBishopMoves = (piece:Piece, boardState:Piece[]):Position[]=>{
+    const possibleMoves:Position[] = [];
+
+ 
+    for(let i=0;i<4;i++){
+        // analyze upper right diagonal
+        // then down right diagonal
+        // then upper left diagonal
+        // then down left diagonal
+
+
+        let x = piece.position.x + bishopX[i];
+        let y = piece.position.y + bishopY[i];
+        
+        // check if the position is on the board
+        while(x >= 0 && x < 8 && y >= 0 && y < 8) {
+            const position = {x, y};
+            //print posible moves
+            if(bishopMove(piece.position, position, piece.team, bishopX[i], bishopY[i], bishopX[i], bishopY[i], boardState)){
+                possibleMoves.push(position);
+            }
+            //stop if tile is occupied
+            if(Referee.tileIsOccupied(position, boardState)) {
+                break;
+            }
+
+            //move to next tile
+            x += bishopX[i];
+            y += bishopY[i];
+        }
     }
+    return possibleMoves;
+}

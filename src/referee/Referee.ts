@@ -1,9 +1,9 @@
 import { PieceType, TeamType, Piece, Position, samePosition} from "../Constants";
 import { GetPossiblePawnMoves,pawnMove } from "./rules/PawnRules";
-import { knightMove } from "./rules/KnightRules";
-import { bishopMove } from "./rules/BishopRules";
-import { rookMove } from "./rules/RookRules";
-import { kingMove } from "./rules/KingRules";
+import { knightMove, GetPossibleKnightMoves } from "./rules/KnightRules";
+import { bishopMove, GetPossibleBishopMoves } from "./rules/BishopRules";
+import { rookMove, GetPossibleRookMoves } from "./rules/RookRules";
+import { GetPossibleKingMoves, kingMove } from "./rules/KingRules";
 
 export default class Referee{
     static tileIsOccupied(position:Position, boardState: Piece[]):boolean{
@@ -69,6 +69,17 @@ export default class Referee{
         switch(piece.type){
             case PieceType.PAWN:
                 return GetPossiblePawnMoves(piece,boardState);
+            case PieceType.KNIGHT:
+                return GetPossibleKnightMoves(piece,boardState);
+            case PieceType.BISHOP:
+                return GetPossibleBishopMoves(piece,boardState);
+            case PieceType.ROOK:
+                return GetPossibleRookMoves(piece,boardState);
+            case PieceType.QUEEN:
+                return GetPossibleBishopMoves(piece,boardState).concat(GetPossibleRookMoves(piece,boardState));
+            case PieceType.KING:
+                return GetPossibleKingMoves(piece,boardState);
+
 
             default:
                 return [];

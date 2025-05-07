@@ -8,3 +8,24 @@ export const kingMove=(initialPosition:Position, desiredPosition: Position, team
             }
         return false;
 }
+
+export const GetPossibleKingMoves = (piece:Piece, boardState:Piece[]):Position[]=>{
+    const possibleMoves:Position[] = [];
+ 
+    for(let y=-1;y<=1;y++){
+        for(let x=-1;x<=1;x++){
+            if(x===0 && y===0){
+                continue;
+            }
+            const desiredPosition:Position = {
+                x:piece.position.x + x,
+                y:piece.position.y + y
+            }
+
+            if(kingMove(piece.position, desiredPosition, piece.team, x, y, 0, 0, boardState)){
+                possibleMoves.push(desiredPosition);
+            }
+        }
+    }
+    return possibleMoves;
+}

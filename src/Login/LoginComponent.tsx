@@ -22,10 +22,6 @@ const LoginComponent: React.FunctionComponent= () => {
       return;
     }
 
-    if (!termsAccepted) {
-      alert("Para entrar a este sitio es necesario vender tu alma a Satanás");
-      return;
-    }
 
     users[username] && users[username] === password
       ? setIsLoggedIn(true): alert("Usuario o contraseña incorrecta");

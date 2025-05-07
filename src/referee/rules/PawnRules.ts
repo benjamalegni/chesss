@@ -23,9 +23,22 @@ import Referee from "../Referee"
 export const GetPossiblePawnMoves = (piece:Piece, boardState : Piece[]):Position[] => {
     const possibleMoves:Position [] = [];
     const pawnDirection = (piece.team === TeamType.OUR)? 1:-1;
-    
-    if(!Referee.tileIsOccupied({x:piece.position.x ,y: piece.position.y + pawnDirection}, boardState)){
-        possibleMoves.push({x:piece.position.x, y:piece.position.y + pawnDirection});
+
+    // Check all possible moves in a 3x2 grid in front of the pawn
+    for(let y = 1; y < 3; y++) {
+        for(let x = -1; x <= 1; x++) {
+            const desiredPosition = {x:piece.position.x + x, y:piece.position.y + y*pawnDirection};
+            if(pawnMove(piece.position,desiredPosition,piece.team,x,y*pawnDirection,boardState)){
+                possibleMoves.push(desiredPosition);
+            }
+        }
+    }
+
+    if(Referee.isEnPassantMove(piece.position, {x:piece.position.x-1,y:piece.position.y + pawnDirection}, piece.type, piece.team, boardState)){
+        possibleMoves.push({x:piece.position.x-1,y:piece.position.y + pawnDirection});
+    }
+    if(Referee.isEnPassantMove(piece.position, {x:piece.position.x+1,y:piece.position.y + pawnDirection}, piece.type, piece.team, boardState)){
+        possibleMoves.push({x:piece.position.x+1,y:piece.position.y + pawnDirection});
     }
 
     return possibleMoves;
