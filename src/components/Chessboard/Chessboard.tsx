@@ -188,7 +188,7 @@ function dropPiece(e: React.MouseEvent){
                         break;
                     }
                 }
-                piece.image = `${process.env.PUBLIC_URL}/assets/images/${image}_${teamType}.png`;
+                piece.image = `${process.env.PUBLIC_URL}/assets/images/${image}_${teamType}.svg`;
             }
 
             results.push(piece);
@@ -233,10 +233,10 @@ function dropPiece(e: React.MouseEvent){
         <div id="pawn-promotion-modal" className="hidden" ref={modalRef}>
             <div className="modal-body">
 
-            <img onClick={()=> promotePawn(PieceType.ROOK)} src={`${process.env.PUBLIC_URL}/assets/images/rook_${promotionTeamType()}.png`}/>
-            <img onClick={()=> promotePawn(PieceType.BISHOP)} src={`${process.env.PUBLIC_URL}/assets/images/bishop_${promotionTeamType()}.png`}/>
-            <img onClick={()=> promotePawn(PieceType.KNIGHT)} src={`${process.env.PUBLIC_URL}/assets/images/knight_${promotionTeamType()}.png`}/>
-            <img onClick={()=> promotePawn(PieceType.QUEEN)} src={`${process.env.PUBLIC_URL}/assets/images/queen_${promotionTeamType()}.png`}/>
+            <img onClick={()=> promotePawn(PieceType.ROOK)} src={`${process.env.PUBLIC_URL}/assets/images/rook_${promotionTeamType()}.svg`}/>
+            <img onClick={()=> promotePawn(PieceType.BISHOP)} src={`${process.env.PUBLIC_URL}/assets/images/bishop_${promotionTeamType()}.svg`}/>
+            <img onClick={()=> promotePawn(PieceType.KNIGHT)} src={`${process.env.PUBLIC_URL}/assets/images/knight_${promotionTeamType()}.svg`}/>
+            <img onClick={()=> promotePawn(PieceType.QUEEN)} src={`${process.env.PUBLIC_URL}/assets/images/queen_${promotionTeamType()}.svg`}/>
             </div>
         </div>
 
