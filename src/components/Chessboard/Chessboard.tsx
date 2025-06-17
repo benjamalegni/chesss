@@ -8,7 +8,7 @@ export default function Chessboard(){
 const [activePiece, setActivePiece] = useState<HTMLElement | null>(null);
 const [grabPosition, setGrabPosition] = useState<Position>({x:-1, y:-1});
 const [pieces, setPieces] = useState<Piece[]>(initialBoardState);
-const [hoveredPiece, setHoveredPiece] = useState<Piece | null>(null); // Added hoveredPiece state
+const [previewedEnemyPiece, setPreviewedEnemyPiece] = useState<Piece | null>(null); // Added for enemy piece preview
 const chessboardRef = useRef<HTMLDivElement>(null);
 const referee = new Referee();
 const [promotionPawn, setPromotionPawn] = useState<Piece>();
@@ -24,58 +24,64 @@ function updateValidMoves(){
     });
 }
 
-function showPreview(pieceData: Piece) {
-    if (!pieceData) return;
-
-    setPieces(currentPieces =>
-        currentPieces.map(p => {
-            if (samePosition(p.position, pieceData.position)) {
-                return { ...p, possibleMoves: referee.getValidMoves(p, currentPieces) };
-            }
-            return p;
-        })
-    );
-    setHoveredPiece(pieceData);
-}
-
-function clearPreview(){
-    if(hoveredPiece){
-        const pieceBeingDragged = activePiece ? pieces.find(p => samePosition(p.position, grabPosition)) : null;
-
-        setPieces(currentPieces => {
-            return currentPieces.map(p => {
-                if (samePosition(p.position, hoveredPiece.position)) {
-                    if (!pieceBeingDragged || !samePosition(p.position, pieceBeingDragged.position)) {
-                        return { ...p, possibleMoves: [] };
-                    }
-                }
-                return p;
-            });
-        });
-        setHoveredPiece(null);
-    }
-}
+// Removed showPreview function
+// Removed clearPreview function
 
 function grabPiece(e: React.MouseEvent){
-    updateValidMoves(); // This calculates moves for ALL pieces, which is good for overall validation.
-
     const chessboard = chessboardRef.current;
     const element = e.target as HTMLElement;
 
-    if(element.classList.contains("chess-piece") && chessboard){
-        const grabX = Math.floor((e.clientX - chessboard.offsetLeft)/GRIDSIZE)
-        const grabY = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800)/GRIDSIZE))
-        setGrabPosition({x:grabX, y:grabY})
+    // 1. Clear any existing enemy piece preview or its moves if we click anywhere.
+    if (previewedEnemyPiece) {
+        const prevEnemyPos = previewedEnemyPiece.position; // Capture position before nulling
+        setPieces(currentPieces => currentPieces.map(p =>
+            samePosition(p.position, prevEnemyPos) ? { ...p, possibleMoves: undefined } : p
+        ));
+        setPreviewedEnemyPiece(null);
+    }
+    // Also, if an active piece is being dragged, and we click somewhere else (not on a piece),
+    // it should be deselected/reset. This is handled further down if not clicking on a piece.
 
-        const x = e.clientX - GRIDSIZE/2;
-        const y = e.clientY -GRIDSIZE/2;
-        element.style.position="absolute";
-        element.style.left = `${x}px`;
-        element.style.top = `${y}px`;
+    if (element.classList.contains("chess-piece") && chessboard) {
+        const grabX = Math.floor((e.clientX - chessboard.offsetLeft) / GRIDSIZE);
+        const grabY = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / GRIDSIZE));
 
+        const clickedPiece = pieces.find(p => samePosition(p.position, { x: grabX, y: grabY }));
 
+        if (clickedPiece) {
+            if (clickedPiece.team === TeamType.ENEMY) {
+                const moves = referee.getValidMoves(clickedPiece, pieces);
+                const updatedClickedPieceWithMoves = { ...clickedPiece, possibleMoves: moves };
 
-        setActivePiece(element);
+                setPieces(currentPieces => currentPieces.map(p =>
+                    samePosition(p.position, clickedPiece.position) ? updatedClickedPieceWithMoves : p
+                ));
+                setPreviewedEnemyPiece(updatedClickedPieceWithMoves);
+                setActivePiece(null); // Ensure enemy piece is not picked up
+            } else { // Clicked on OUR piece
+                updateValidMoves(); // Calculate moves for our piece (and others for check context for OUR piece)
+                setGrabPosition({ x: grabX, y: grabY });
+
+                const xPos = e.clientX - GRIDSIZE/2;
+                const yPos = e.clientY -GRIDSIZE/2;
+                element.style.position = "absolute";
+                element.style.left = `${xPos}px`;
+                element.style.top = `${yPos}px`;
+                setActivePiece(element);
+            }
+        }
+    } else { // Clicked on an empty square or the board itself
+        if (activePiece) { // If a piece was being dragged, reset it
+            activePiece.style.position = 'relative';
+            activePiece.style.removeProperty('top');
+            activePiece.style.removeProperty('left');
+            setActivePiece(null);
+            // Clear its moves from display by clearing grabPosition, which highlight logic uses
+            setGrabPosition({x: -1, y: -1});
+            // Also clear all possible moves from all pieces, as updateValidMoves() would have set them
+            setPieces(currentPieces => currentPieces.map(p => ({...p, possibleMoves: undefined})));
+        }
+        // If previewedEnemyPiece was set, it's already cleared at the top of the function.
     }
 }
 
@@ -116,7 +122,20 @@ function movePiece(e: React.MouseEvent){
 
 function dropPiece(e: React.MouseEvent){
     const chessboard = chessboardRef.current;
-    if(activePiece && chessboard){
+
+    // Per prompt: At the beginning of dropPiece, if previewedEnemyPiece is set, clear it.
+    // This handles scenarios like previewing an enemy piece, then clicking an empty square (mouseup).
+    // Or if any other sequence leads to mouseup while a preview is active.
+    if (previewedEnemyPiece) {
+         const prevEnemyPos = previewedEnemyPiece.position; // Capture before nulling state
+         setPieces(currentPieces => currentPieces.map(p =>
+             samePosition(p.position, prevEnemyPos) ? { ...p, possibleMoves: undefined } : p
+         ));
+         setPreviewedEnemyPiece(null);
+    }
+
+    if(activePiece && chessboard){ // This implies we were dragging OUR piece
+        // (If previewedEnemyPiece was set, it would have been cleared when we grabbed OUR piece)
         // substracted 800 to align with chessboard axis (starting from bottom left)
         const x=Math.floor((e.clientX - chessboard.offsetLeft)/GRIDSIZE);
         const y=Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800)/GRIDSIZE));
@@ -244,15 +263,17 @@ function dropPiece(e: React.MouseEvent){
 
             const pieceOnSquare = pieces.find(p => samePosition(p.position, {x, y}));
 
-            let highlight = false;
-            // Determine which piece's moves to show: active (dragged) or hovered (if no piece is dragged)
-            const pieceWhoseMovesToShow = activePiece
-                ? pieces.find(p => samePosition(p.position, grabPosition))
-                : hoveredPiece;
-
-            if (pieceWhoseMovesToShow?.possibleMoves) {
-                highlight = pieceWhoseMovesToShow.possibleMoves.some(m => samePosition(m, { x, y }));
+            // Updated highlight logic
+            let pieceToHighlightMoves: Piece | undefined = undefined;
+            if (previewedEnemyPiece) {
+                // Make sure to use the piece from the 'pieces' state array which has the moves
+                pieceToHighlightMoves = pieces.find(p => previewedEnemyPiece && samePosition(p.position, previewedEnemyPiece.position));
+            } else if (activePiece) { // activePiece is the HTMLElement being dragged
+                // grabPosition stores the coordinate of the piece being dragged
+                pieceToHighlightMoves = pieces.find(p => samePosition(p.position, grabPosition));
             }
+
+            let highlight = pieceToHighlightMoves?.possibleMoves?.some(m => samePosition(m, {x,y})) || false;
             
             board.push(
                 <Tile
@@ -260,8 +281,6 @@ function dropPiece(e: React.MouseEvent){
                     isEven={isEven}
                     piece={pieceOnSquare}
                     highlight={highlight}
-                    onPieceMouseEnter={() => pieceOnSquare && showPreview(pieceOnSquare)}
-                    onPieceMouseLeave={() => pieceOnSquare && clearPreview()}
                 />
             )
         }
