@@ -5,9 +5,10 @@ import { useRef, useState } from 'react';
 import { XAXIS, YAXIS, Piece, TeamType, PieceType, initialBoardState, Position, GRIDSIZE, samePosition } from '../../Constants';
 
 export default function Chessboard(){
-const [activePiece, setActivePiece] = useState<HTMLElement | null>(null)
+const [activePiece, setActivePiece] = useState<HTMLElement | null>(null);
 const [grabPosition, setGrabPosition] = useState<Position>({x:-1, y:-1});
 const [pieces, setPieces] = useState<Piece[]>(initialBoardState);
+const [hoveredPiece, setHoveredPiece] = useState<Piece | null>(null); // Added hoveredPiece state
 const chessboardRef = useRef<HTMLDivElement>(null);
 const referee = new Referee();
 const [promotionPawn, setPromotionPawn] = useState<Piece>();
@@ -23,10 +24,40 @@ function updateValidMoves(){
     });
 }
 
+function showPreview(pieceData: Piece) {
+    if (!pieceData) return;
 
+    setPieces(currentPieces =>
+        currentPieces.map(p => {
+            if (samePosition(p.position, pieceData.position)) {
+                return { ...p, possibleMoves: referee.getValidMoves(p, currentPieces) };
+            }
+            return p;
+        })
+    );
+    setHoveredPiece(pieceData);
+}
+
+function clearPreview(){
+    if(hoveredPiece){
+        const pieceBeingDragged = activePiece ? pieces.find(p => samePosition(p.position, grabPosition)) : null;
+
+        setPieces(currentPieces => {
+            return currentPieces.map(p => {
+                if (samePosition(p.position, hoveredPiece.position)) {
+                    if (!pieceBeingDragged || !samePosition(p.position, pieceBeingDragged.position)) {
+                        return { ...p, possibleMoves: [] };
+                    }
+                }
+                return p;
+            });
+        });
+        setHoveredPiece(null);
+    }
+}
 
 function grabPiece(e: React.MouseEvent){
-    updateValidMoves();
+    updateValidMoves(); // This calculates moves for ALL pieces, which is good for overall validation.
 
     const chessboard = chessboardRef.current;
     const element = e.target as HTMLElement;
@@ -210,19 +241,28 @@ function dropPiece(e: React.MouseEvent){
 
             // check whether the sum of numbers x,y is even to draw each tile
             const isEven = (x+y+2)%2===0;
-            let img = undefined;
 
-            pieces.forEach(p=> {
-                if(samePosition(p.position, {x:x, y:y})){
-                    img=p.image
-                }
-            })
+            const pieceOnSquare = pieces.find(p => samePosition(p.position, {x, y}));
 
-            let currentPiece = pieces.find(p=> samePosition(p.position,grabPosition));
-            let highlight = (currentPiece?.possibleMoves) ? currentPiece.possibleMoves.some(p=> samePosition(p, {x:x , y:y})): false;
+            let highlight = false;
+            // Determine which piece's moves to show: active (dragged) or hovered (if no piece is dragged)
+            const pieceWhoseMovesToShow = activePiece
+                ? pieces.find(p => samePosition(p.position, grabPosition))
+                : hoveredPiece;
+
+            if (pieceWhoseMovesToShow?.possibleMoves) {
+                highlight = pieceWhoseMovesToShow.possibleMoves.some(m => samePosition(m, { x, y }));
+            }
             
             board.push(
-                    <Tile key={`${x},${y}`} isEven={isEven} image={img} highlight={highlight}/> 
+                <Tile
+                    key={`${x},${y}`}
+                    isEven={isEven}
+                    piece={pieceOnSquare}
+                    highlight={highlight}
+                    onPieceMouseEnter={() => pieceOnSquare && showPreview(pieceOnSquare)}
+                    onPieceMouseLeave={() => pieceOnSquare && clearPreview()}
+                />
             )
         }
     }       
