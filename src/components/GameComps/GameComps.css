@@ -1,9 +1,115 @@
 #component{
-    height:100vh;
-    display:flex;
-    margin: 10px;
-    background-color: black;
+	height:100vh;
+	display:flex;
+	margin: 0;
+	background-color: #000;
+	justify-content:center;
+	align-items:center;
+}
 
-    justify-content:space-between;
-    border-radius: 20px;
+.center-stage{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+}
+
+#online-controls{
+	display:flex;
+	align-items:center;
+	gap:12px;
+	padding: 10px 12px;
+}
+
+#online-controls .hint{
+	color: white;
+	margin-left: 10px;
+}
+
+.status-badge{
+	background: rgba(255,255,255,0.08);
+	padding: 8px 10px;
+	border-radius: 8px;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.copy-btn{
+	appearance: none;
+	border: 1px solid #2f66ff;
+	background: transparent;
+	color: #bcd2ff;
+	border-radius: 6px;
+	padding: 6px 10px;
+	cursor: pointer;
+}
+
+.copy-btn:hover{
+	background: rgba(47,102,255,0.15);
+}
+
+.btn{
+	appearance: none;
+	border: none;
+	border-radius: 8px;
+	padding: 10px 14px;
+	font-weight: 700;
+	letter-spacing: 0.2px;
+	cursor: pointer;
+	transition: transform 0.05s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+	user-select: none;
+}
+
+.btn:disabled{
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.btn-primary{
+	background: linear-gradient(180deg, #6aa3ff, #2f66ff);
+	color: #fff;
+	box-shadow: 0 4px 12px rgba(47,102,255,0.35);
+}
+
+.btn-primary:hover:not(:disabled){
+	background: linear-gradient(180deg, #7bb0ff, #386cff);
+	transform: translateY(-1px);
+	box-shadow: 0 6px 16px rgba(47,102,255,0.45);
+}
+
+.btn-secondary{
+	background: linear-gradient(180deg, #64e39b, #1eb66a);
+	color: #072c17;
+	box-shadow: 0 4px 12px rgba(30,182,106,0.35);
+}
+
+.btn-secondary:hover:not(:disabled){
+	background: linear-gradient(180deg, #79e7a9, #23c175);
+	transform: translateY(-1px);
+	box-shadow: 0 6px 16px rgba(30,182,106,0.45);
+}
+
+.room-input{
+	background: #0e0e0e;
+	color: #f2f2f2;
+	border: 2px solid #333;
+	border-radius: 8px;
+	padding: 10px 12px;
+	min-width: 220px;
+	outline: none;
+}
+
+.room-input:focus{
+	border-color: #2f66ff;
+	box-shadow: 0 0 0 2px rgba(47,102,255,0.25);
+}
+
+.board-wrapper{
+	position: relative;
+}
+
+.board-wrapper.is-blurred{
+	filter: blur(4px) brightness(0.6);
+	pointer-events: none;
 }
