@@ -6,7 +6,6 @@ import Title from "./Title/Title";
 const LoginComponent: React.FunctionComponent= () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const handleLogin = (event: React.FormEvent) => {

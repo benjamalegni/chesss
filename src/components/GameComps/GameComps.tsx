@@ -13,7 +13,6 @@ function GameComps(){
     const [myColor, setMyColor] = useState<"white" | "black" | null>(null);
     const [joinCode, setJoinCode] = useState<string>("");
     const [showLogin, setShowLogin] = useState<boolean>(false);
-    const [username, setUsername] = useState<string | null>(null);
 
     function ensureSocket(): Socket{
         if(socket && (status === "waiting" || status === "playing")) return socket;
