@@ -134,6 +134,78 @@ function updateValidMoves(){
 	});
 }
 
+function performMove(target: Position){
+	const currentPiece = pieces.find((p)=> samePosition(p.position, grabPosition));
+	if(!currentPiece) return;
+	const { x, y } = target;
+	const validMove = referee.isValidMove(grabPosition, {x,y}, currentPiece.type,currentPiece.team, pieces);
+	const isEnPassantMove = Referee.isEnPassantMove(grabPosition, {x,y},currentPiece.type,currentPiece.team, pieces)
+	const pawnDirecion = currentPiece.team === TeamType.OUR?1:-1;
+
+	if(online && online.status === 'playing'){
+		const myTeam = getAllowedTeamForMe();
+		if(!isMyTurn() || myTeam === null || currentPiece.team !== myTeam){
+			return;
+		}
+	}
+
+	if(isEnPassantMove){
+		const updatedPieces = pieces.reduce((results, piece)=>{
+			if(samePosition(piece.position, grabPosition)){
+				piece.enPassant=false;
+				piece.position.x=x;
+				piece.position.y=y;
+				results.push(piece);
+			}else if(!samePosition(piece.position, {x, y: y-pawnDirecion})){
+				if(piece.type===PieceType.PAWN){
+					piece.enPassant=false;
+				}
+				results.push(piece);
+			}
+			return results;
+		}, [] as Piece[])
+		setPieces(updatedPieces);
+		setLastMove({from: grabPosition, to: {x, y}});
+		if(!online || online.status !== 'playing'){
+			setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
+		} else {
+			online.socket?.emit('move', { roomId: online.roomId, from: grabPosition, to: {x, y} });
+			setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
+		}
+	}else if(validMove){
+		const updatedPieces = pieces.reduce((results,piece)=>{
+			if(samePosition(piece.position, grabPosition)){
+				piece.enPassant = Math.abs(grabPosition.y-y)===2 &&(piece.type===PieceType.PAWN)
+				piece.position.x=x;
+				piece.position.y=y;
+				let promotionRow = piece.team === TeamType.OUR ? 7:0;
+				if(y===promotionRow && piece.type === PieceType.PAWN){
+					modalRef.current?.classList.remove("hidden")
+					setPromotionPawn(piece);
+					setAwaitingPromotion(true);
+				}
+				results.push(piece);
+			}else if(!(samePosition(piece.position, {x,y}))){
+				if(piece.type===PieceType.PAWN){
+					piece.enPassant=false;
+				}
+				results.push(piece);
+			}
+			return results;
+		}, [] as Piece[])
+		setPieces(updatedPieces);
+		setLastMove({from: grabPosition, to: {x, y}});
+		if(!(awaitingPromotion)){
+			if(!online || online.status !== 'playing'){
+				setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
+			} else {
+				online.socket?.emit('move', { roomId: online.roomId, from: grabPosition, to: {x, y} });
+				setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
+			}
+		}
+	}
+}
+
 function pickTileFromCursor(clientX: number, clientY: number){
 	const chessboard = chessboardRef.current;
 	if(!chessboard) return { x: -1, y: -1 };
@@ -214,113 +286,13 @@ function movePiece(e: React.MouseEvent){
 function dropPiece(e: React.MouseEvent){
 	const chessboard = chessboardRef.current;
 	if(activePiece && chessboard){
-		const { x, y } = pickTileFromCursor(e.clientX, e.clientY);
-
-		const currentPiece = pieces.find(
-			(p)=> samePosition(p.position, grabPosition));
-
-		if(currentPiece){
-			const validMove = referee.isValidMove(grabPosition, {x,y}, currentPiece.type,currentPiece.team, pieces);
-			const isEnPassantMove = Referee.isEnPassantMove(grabPosition, {x,y},currentPiece.type,currentPiece.team, pieces)
-			const pawnDirecion = currentPiece.team === TeamType.OUR?1:-1;
-
-			if(online && online.status === 'playing'){
-				const myTeam = getAllowedTeamForMe();
-				if(!isMyTurn() || myTeam === null || currentPiece.team !== myTeam){
-					// Reset piece position and bail
-					activePiece.style.position= 'relative';
-					activePiece.style.removeProperty("top");
-					activePiece.style.removeProperty("left");
-					activePiece.style.removeProperty("z-index");
-					setActivePiece(null);
-					return;
-				}
-			}
-
-			if(isEnPassantMove){
-				const updatedPieces = pieces.reduce((results, piece)=>{
-					if(samePosition(piece.position, grabPosition)){
-						piece.enPassant=false;
-						piece.position.x=x;
-						piece.position.y=y;
-						results.push(piece);
-					}else if(!samePosition(piece.position, {x, y: y-pawnDirecion})){
-						if(piece.type===PieceType.PAWN){
-							piece.enPassant=false;
-						}
-						results.push(piece);
-					}					
-
-
-					return results;
-				}, [] as Piece[])
-				setPieces(updatedPieces);
-				setLastMove({from: grabPosition, to: {x, y}});
-				if(!online || online.status !== 'playing'){
-					// offline toggle turn for consistency
-					setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
-				} else {
-					// send immediately (no promotion possible on en passant)
-					online.socket?.emit('move', {
-						roomId: online.roomId,
-						from: grabPosition,
-						to: {x, y}
-					});
-					setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
-				}
-			}else if(validMove){
-				const updatedPieces = pieces.reduce((results,piece)=>{
-					if(samePosition(piece.position, grabPosition)){
-						// SPECIAL MOVE
-						piece.enPassant = Math.abs(grabPosition.y-y)===2 &&(piece.type===PieceType.PAWN)
-						piece.position.x=x;
-						piece.position.y=y;
-
-						// pawn promotion row
-						let promotionRow = piece.team === TeamType.OUR ? 7:0;
-						if(y===promotionRow && piece.type === PieceType.PAWN){
-							//make promotion
-							modalRef.current?.classList.remove("hidden")
-							setPromotionPawn(piece);
-							setAwaitingPromotion(true);
-						}
-
-						results.push(piece);
-					}else if(!(samePosition(piece.position, {x,y}))){
-						if(piece.type===PieceType.PAWN){
-							piece.enPassant=false;
-						}
-						results.push(piece);
-					}				  
-
-					return results;
-				}, [] as Piece[])
-				setPieces(updatedPieces);
-				setLastMove({from: grabPosition, to: {x, y}});
-				if(!(awaitingPromotion)){
-					if(!online || online.status !== 'playing'){
-						setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
-					} else {
-						// no promotion: send immediately
-						online.socket?.emit('move', {
-							roomId: online.roomId,
-							from: grabPosition,
-							to: {x, y}
-						});
-						setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
-					}
-				}
-			}else{
-				//reset piece position
-					activePiece.style.position= 'relative';
-					activePiece.style.removeProperty("top");
-					activePiece.style.removeProperty("left");
-					activePiece.style.removeProperty("z-index");
-
-			}
-		}
-
-		
+		const target = pickTileFromCursor(e.clientX, e.clientY);
+		performMove(target);
+		//reset piece position
+		activePiece.style.position= 'relative';
+		activePiece.style.removeProperty("top");
+		activePiece.style.removeProperty("left");
+		activePiece.style.removeProperty("z-index");
 		setActivePiece(null);
 	}
 }
@@ -402,9 +374,10 @@ function dropPiece(e: React.MouseEvent){
 			let highlight = (currentPiece?.possibleMoves) ? currentPiece.possibleMoves.some(p=> samePosition(p, {x:x , y:y})): false;
 			const targetHasPiece = pieces.some(p => samePosition(p.position, {x, y}));
 			const capture = highlight && targetHasPiece;
+			const handleClick = highlight ? () => performMove({ x, y }) : undefined;
 			
 			board.push(
-					<Tile key={`${x},${y}`} isEven={isEven} image={img} highlight={highlight} capture={capture}/> 
+					<Tile key={`${x},${y}`} isEven={isEven} image={img} highlight={highlight} capture={capture} onClick={handleClick}/> 
 			)
 		}
 	}       

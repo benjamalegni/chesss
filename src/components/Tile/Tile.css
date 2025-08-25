@@ -7,6 +7,10 @@
 	position: relative;
 }
 
+.tile.clickable{
+	cursor: pointer;
+}
+
 .b_tile{
 	background-color: rgb(184,139,74);
 }
@@ -43,6 +47,7 @@
 	border-radius: 50%;
 	background-color: rgba(0, 0, 0, 0.6);
 	z-index: 2;
+	pointer-events: none;
 }
 
 .capture-indicator{
@@ -55,6 +60,7 @@
 	background-color: rgba(220, 20, 60, 0.85);
 	border: 2px solid white;
 	z-index: 2;
+	pointer-events: none;
 }
 
 

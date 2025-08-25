@@ -6,14 +6,16 @@ interface Props{
 	image?:string;
 	highlight: boolean;
 	capture?: boolean;
+	onClick?: () => void;
 }
 
-export default function Tile({isEven, image, highlight, capture}:Props){
+export default function Tile({isEven, image, highlight, capture, onClick}:Props){
 	const className : string = ["tile", 
-								isEven ? "b_tile" : "w_tile"
+								isEven ? "b_tile" : "w_tile",
+								highlight ? "clickable" : ""
 							].filter(Boolean).join(' ');
 
-	return <div className={className}> 
+	return <div className={className} onClick={onClick}> 
 					{image && <div style={{ backgroundImage: `url(${image})` }} className="chess-piece"></div>}
 					{highlight && !capture && <div className="move-indicator" />}
 					{capture && <div className="capture-indicator" />}

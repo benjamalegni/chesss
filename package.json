@@ -28,7 +28,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "node server/index.js",
-    "dev": "concurrently \"npm run server\" \"npm start\"",
+    "dev": "concurrently -k -s first \"PORT=8080 node server/index.js\" \"REACT_APP_SOCKET_URL=http://localhost:8080 PORT=3000 react-scripts start\"",
     "start:server": "node server/index.js"
   },
   "eslintConfig": {

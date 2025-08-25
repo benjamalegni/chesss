@@ -7,6 +7,16 @@
 	align-items:center;
 }
 
+.app-header{
+	position: absolute;
+	top: 8px;
+	left: 16px;
+	color: #fff;
+	font-weight: 800;
+	font-size: 24px;
+	letter-spacing: -3px;
+}
+
 .center-stage{
 	display: flex;
 	flex-direction: column;
@@ -30,6 +40,7 @@
 	background: rgba(255,255,255,0.08);
 	padding: 8px 10px;
 	border-radius: 8px;
+	font-size: 14px;
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
@@ -67,21 +78,23 @@
 }
 
 .btn-primary{
-	background: linear-gradient(180deg, #6aa3ff, #2f66ff);
+	background:transparent;
+	border: 1px solid #3d6cff;
 	color: #fff;
-	box-shadow: 0 4px 12px rgba(47,102,255,0.35);
+	box-shadow: 0 6px 16px rgba(47,102,255,0.9);
 }
 
 .btn-primary:hover:not(:disabled){
 	background: linear-gradient(180deg, #7bb0ff, #386cff);
 	transform: translateY(-1px);
-	box-shadow: 0 6px 16px rgba(47,102,255,0.45);
+	box-shadow: 0 6px 16px rgba(47,102,255,0.9);
 }
 
 .btn-secondary{
-	background: linear-gradient(180deg, #64e39b, #1eb66a);
-	color: #072c17;
-	box-shadow: 0 4px 12px rgba(30,182,106,0.35);
+	background: transparent;
+	border: 1px solid #ff8800;
+	color: #fff;
+	box-shadow: 0 4px 12px rgba(255,136,0,0.9);
 }
 
 .btn-secondary:hover:not(:disabled){

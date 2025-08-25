@@ -13,6 +13,7 @@ function GameComps(){
     const [myColor, setMyColor] = useState<"white" | "black" | null>(null);
     const [joinCode, setJoinCode] = useState<string>("");
     const [showLogin, setShowLogin] = useState<boolean>(false);
+    const [username, setUsername] = useState<string | null>(null);
 
     function ensureSocket(): Socket{
         if(socket && (status === "waiting" || status === "playing")) return socket;
@@ -83,36 +84,45 @@ function GameComps(){
 
     return <div id="component">
         <div style={{ position: 'absolute', top: 10, right: 10 }}>
-            <button onClick={()=> setShowLogin(v => !v)}>{showLogin ? 'Cerrar' : 'Login'}</button>
+            <button onClick={()=> setShowLogin(v => !v)}>{showLogin ? 'Close' : 'Login'}</button>
         </div>
         {showLogin ? (
             <div style={{ padding: 16 }}>
                 <LoginComponent/>
             </div>
         ) : (
+            <>
+            <header className="app-header">CHESSS</header>
             <div className="center-stage">
                 <div id="online-controls">
-                    <button className="btn btn-primary" onClick={createPrivateRoom} disabled={status === "waiting" || status === "playing"}>Crear sala</button>
-                    <input
-                        className="room-input"
-                        placeholder="Ingresar código de sala"
-                        value={joinCode}
-                        onChange={(e)=> setJoinCode(e.target.value)}
-                        disabled={status === "waiting" || status === "playing"}
-                    />
-                    <button className="btn btn-secondary" onClick={joinPrivateRoom} disabled={status === "waiting" || status === "playing" || !joinCode.trim()}>Unirse a sala</button>
+                    {/* create party button */}
+                    <button className="btn btn-primary" onClick={createPrivateRoom}>Create Party</button>
+                    {/* si es offline, mostrar el input y el boton de join party */}
+                    {status === 'offline' && (
+                        <>
+                            <input
+                                className="room-input"
+                                placeholder="Enter Party Code"
+                                value={joinCode}
+                                onChange={(e)=> setJoinCode(e.target.value)}
+                            />
+                            <button className="btn btn-secondary" onClick={joinPrivateRoom} disabled={!joinCode.trim()}>Join Party</button>
+                        </>
+                    )}
+                    {/* si es waiting o playing, mostrar el estado y el boton de leave */}
                     {(status === "waiting" || status === "playing") && (
                         <span className="hint status-badge">
-                            {status === 'waiting' ? 'Esperando oponente…' : 'En juego'} · Sala: {roomId}
-                            <button className="copy-btn" onClick={copyRoomId} title="Copiar código">Copiar</button>
+                            {status === 'waiting' ? 'Waiting for opponent...' : 'Playing'} · Party: {roomId}
+                            <button className="copy-btn" onClick={copyRoomId} title="Copy">Copy</button>
                         </span>
                     )}
-                    {(status === "waiting" || status === "playing") && <button onClick={disconnect}>Salir</button>}
+                    {(status === "waiting" || status === "playing") && <button onClick={disconnect}>Leave</button>}
                 </div>
                 <div className={`board-wrapper ${status !== 'playing' ? 'is-blurred' : ''}`}>
                     <Chessboard online={online}/>
                 </div>
             </div>
+            </>
         )}
     </div>
 }
