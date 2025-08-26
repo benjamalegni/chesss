@@ -1,7 +1,7 @@
 #root{
     padding:1px;
-    background:linear-gradient(195deg,#000000, #444);
-    animation:gradient-background 4s infinite alternate;
-    background-size:600%;
-    background-repeat: no-repeat;
+    background-color: black;
+    /* animation:gradient-background 4s infinite alternate; */
+    /* background-size:600%;
+    background-repeat: no-repeat; */
 }
