@@ -1,9 +1,9 @@
 #chessboard{
 	display:grid;
-	grid-template-columns: repeat(8,100px);
-	grid-template-rows: repeat(8,100px);
-	width: 800px;
-	height:800px;
+	grid-template-columns: repeat(8,1fr);
+	grid-template-rows: repeat(8,1fr);
+	width: min(92vmin, 800px);
+	aspect-ratio: 1 / 1;
 	margin:5vh;
 	position: relative;
 	/*background:linear-gradient(195deg,#ff2281, #011ffd);
@@ -100,4 +100,16 @@ background-color: black;
 
 #pawn-promotion-modal.hidden{
 	display:none;
+}
+
+@media (max-width: 900px){
+	.board-layout{
+		flex-direction: column;
+		gap: 12px;
+	}
+	.timer-panel{
+		flex-direction: row;
+		width: auto;
+		min-width: 0;
+	}
 }

@@ -29,6 +29,21 @@ const [whiteTimeLeft, setWhiteTimeLeft] = useState<number | null>(null);
 const [blackTimeLeft, setBlackTimeLeft] = useState<number | null>(null);
 const [clockStarted, setClockStarted] = useState<boolean>(false);
 
+// Responsive tile size in px, derived from board size
+const [tileSize, setTileSize] = useState<number>(GRIDSIZE);
+useEffect(()=>{
+	function updateTileSize(){
+		const el = chessboardRef.current;
+		if(!el) return;
+		const rect = el.getBoundingClientRect();
+		const size = Math.floor(rect.width / 8);
+		if(size > 0) setTileSize(size);
+	}
+	updateTileSize();
+	window.addEventListener('resize', updateTileSize);
+	return ()=> window.removeEventListener('resize', updateTileSize);
+}, []);
+
 function getAllowedTeamForMe(): TeamType | null{
 	if(!online || online.status !== 'playing' || !online.myColor){
 		return null;
@@ -268,8 +283,8 @@ function pickTileFromCursor(clientX: number, clientY: number){
 	const rect = chessboard.getBoundingClientRect();
 	const relX = clientX - rect.left;
 	const relY = clientY - rect.top;
-	const x = Math.floor(relX / GRIDSIZE);
-	const y = Math.abs(Math.ceil((relY - rect.height)/GRIDSIZE)); // invert axis
+	const x = Math.floor(relX / tileSize);
+	const y = Math.abs(Math.ceil((relY - rect.height)/tileSize)); // invert axis
 	return { x, y };
 }
 
@@ -293,8 +308,8 @@ function grabPiece(e: React.MouseEvent){
 
 		setGrabPosition({x:grabX, y:grabY})
 
-		const x = e.clientX - GRIDSIZE/2;
-		const y = e.clientY - GRIDSIZE/2;
+		const x = e.clientX - tileSize/2;
+		const y = e.clientY - tileSize/2;
 		element.style.position = 'fixed';
 		element.style.left = `${x}px`;
 		element.style.top = `${y}px`;
@@ -307,14 +322,14 @@ function grabPiece(e: React.MouseEvent){
 function movePiece(e: React.MouseEvent){
 	const chessboard = chessboardRef.current;
 	if(activePiece && chessboard){
-		const x = e.clientX - GRIDSIZE/2;
-		const y = e.clientY - GRIDSIZE/2;
+		const x = e.clientX - tileSize/2;
+		const y = e.clientY - tileSize/2;
 
 		const rect = chessboard.getBoundingClientRect();
 		const minX = rect.left;
 		const minY = rect.top;
-		const maxX = rect.right - GRIDSIZE;
-		const maxY = rect.bottom - GRIDSIZE;
+		const maxX = rect.right - tileSize;
+		const maxY = rect.bottom - tileSize;
 
 		activePiece.style.position = 'fixed';
 
@@ -483,8 +498,8 @@ function dropPiece(e: React.MouseEvent){
 				id="chessboard"
 				ref={chessboardRef}>
 					{board}
+				</div>
 			</div>
-		</div>
-		</>
+			</>
 	)
 }

@@ -1,8 +1,8 @@
 .tile{
 	display:grid;
 	place-content: center;
-	height: 100px;
-	width: 100px;
+	height: 100%;
+	width: 100%;
 	overflow: visible;
 	position: relative;
 }
@@ -20,15 +20,15 @@
 }
 
 .tile img{
-	width : 80px;
+	width : 80%;
 }
 
 .tile .chess-piece{
-	width:100px;
-	height: 100px;
+	width:100%;
+	height: 100%;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-size: 80px;
+	background-size: 80%;
 	position: relative;
 	z-index: 1;
 }
@@ -42,8 +42,8 @@
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
-	height: 24px;
-	width: 24px;
+	height: clamp(12px, 3.5vmin, 24px);
+	width: clamp(12px, 3.5vmin, 24px);
 	border-radius: 50%;
 	background-color: rgba(0, 0, 0, 0.6);
 	z-index: 2;
@@ -52,10 +52,10 @@
 
 .capture-indicator{
 	position: absolute;
-	right: 6px;
-	top: 6px;
-	height: 16px;
-	width: 16px;
+	right: clamp(4px, 0.8vmin, 6px);
+	top: clamp(4px, 0.8vmin, 6px);
+	height: clamp(12px, 2.2vmin, 16px);
+	width: clamp(12px, 2.2vmin, 16px);
 	border-radius: 50%;
 	background-color: rgba(220, 20, 60, 0.85);
 	border: 2px solid white;
