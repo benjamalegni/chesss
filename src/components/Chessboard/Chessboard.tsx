@@ -12,7 +12,7 @@ interface OnlineProps{
 	myColor?: 'white' | 'black';
 }
 
-export default function Chessboard({ online }: { online?: OnlineProps }){
+export default function Chessboard({ online, timeLimitSeconds }: { online?: OnlineProps, timeLimitSeconds?: number }){
 const [activePiece, setActivePiece] = useState<HTMLElement | null>(null)
 const [grabPosition, setGrabPosition] = useState<Position>({x:-1, y:-1});
 const [pieces, setPieces] = useState<Piece[]>(initialBoardState);
@@ -23,6 +23,11 @@ const modalRef = useRef<HTMLDivElement>(null);
 const [currentTurn, setCurrentTurn] = useState<'white'|'black'>('white');
 const [lastMove, setLastMove] = useState<{from: Position, to: Position} | null>(null);
 const [awaitingPromotion, setAwaitingPromotion] = useState<boolean>(false);
+
+// Clock state
+const [whiteTimeLeft, setWhiteTimeLeft] = useState<number | null>(null);
+const [blackTimeLeft, setBlackTimeLeft] = useState<number | null>(null);
+const [clockStarted, setClockStarted] = useState<boolean>(false);
 
 function getAllowedTeamForMe(): TeamType | null{
 	if(!online || online.status !== 'playing' || !online.myColor){
@@ -38,17 +43,29 @@ function isMyTurn(): boolean{
 	return online.myColor === currentTurn;
 }
 
+// Initialize turn and timers when a game starts or time limit provided
 useEffect(()=>{
-	if(online && online.status === 'playing'){
+	if(online?.status === 'playing'){
 		setCurrentTurn('white');
+		if(whiteTimeLeft === null || blackTimeLeft === null){
+			const limit = (typeof timeLimitSeconds === 'number' && timeLimitSeconds > 0) ? timeLimitSeconds : 300;
+			setWhiteTimeLeft(limit);
+			setBlackTimeLeft(limit);
+		}
+		setClockStarted(true);
+	} else {
+		setClockStarted(false);
 	}
-}, [online]);
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [online?.status, timeLimitSeconds]);
 
+// Opponent move listener
 useEffect(()=>{
 	const s = online?.socket;
 	if(!s) return;
 	const onMove = (msg: any) => {
 		try{
+			setClockStarted(true);
 			if(msg.type === 'move'){
 				// compatibility if server sends type wrapper
 			}
@@ -122,7 +139,7 @@ useEffect(()=>{
 	return () => {
 		s.off('move', onMove);
 	};
-}, [online?.socket, online?.roomId]);
+}, [online]);
 
 function updateValidMoves(){
 	setPieces((currentPieces) => {
@@ -133,6 +150,37 @@ function updateValidMoves(){
 		});
 	});
 }
+
+// Clock ticking effect
+useEffect(()=>{
+	if(whiteTimeLeft === null || blackTimeLeft === null) return;
+	if(!online || online.status !== 'playing') return;
+	if(awaitingPromotion) return;
+	if(!clockStarted) return;
+	const interval = setInterval(()=>{
+		if(currentTurn === 'white'){
+			setWhiteTimeLeft(prev => {
+				if(prev === null) return prev;
+				const next = Math.max(0, prev - 1);
+				return next;
+			});
+		} else {
+			setBlackTimeLeft(prev => {
+				if(prev === null) return prev;
+				const next = Math.max(0, prev - 1);
+				return next;
+			});
+		}
+	}, 1000);
+	return () => clearInterval(interval);
+}, [online, online?.status, currentTurn, whiteTimeLeft, blackTimeLeft, awaitingPromotion, clockStarted]);
+
+// Ensure the clock starts after the very first move (local or remote)
+useEffect(()=>{
+	if(lastMove && typeof timeLimitSeconds === 'number' && timeLimitSeconds > 0){
+		setClockStarted(true);
+	}
+}, [lastMove, timeLimitSeconds]);
 
 function performMove(target: Position){
 	const currentPiece = pieces.find((p)=> samePosition(p.position, grabPosition));
@@ -146,6 +194,12 @@ function performMove(target: Position){
 		const myTeam = getAllowedTeamForMe();
 		if(!isMyTurn() || myTeam === null || currentPiece.team !== myTeam){
 			return;
+		}
+		// Optional: stop moves if your time is up
+		if(typeof timeLimitSeconds === 'number' && timeLimitSeconds > 0){
+			if((currentTurn === 'white' && whiteTimeLeft === 0) || (currentTurn === 'black' && blackTimeLeft === 0)){
+				return;
+			}
 		}
 	}
 
@@ -166,6 +220,7 @@ function performMove(target: Position){
 		}, [] as Piece[])
 		setPieces(updatedPieces);
 		setLastMove({from: grabPosition, to: {x, y}});
+		setClockStarted(true);
 		if(!online || online.status !== 'playing'){
 			setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
 		} else {
@@ -196,6 +251,7 @@ function performMove(target: Position){
 		setPieces(updatedPieces);
 		setLastMove({from: grabPosition, to: {x, y}});
 		if(!(awaitingPromotion)){
+			setClockStarted(true);
 			if(!online || online.status !== 'playing'){
 				setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
 			} else {
@@ -344,6 +400,7 @@ function dropPiece(e: React.MouseEvent){
 				to: lastMove.to,
 				promotionType: pieceType
 			});
+			setClockStarted(true);
 			setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
 		} else if(!online || online.status !== 'playing'){
 			setCurrentTurn(prev => prev === 'white' ? 'black' : 'white');
@@ -353,6 +410,13 @@ function dropPiece(e: React.MouseEvent){
 
 	function promotionTeamType(){
 		return (promotionPawn?.team === TeamType.OUR)?"w":"b";
+	}
+
+	function formatTime(totalSeconds: number | null){
+		if(totalSeconds === null) return '--:--';
+		const m = Math.floor(totalSeconds / 60);
+		const s = totalSeconds % 60;
+		return `${m}:${s.toString().padStart(2,'0')}`;
 	}
 
 	let board = [];
@@ -380,7 +444,7 @@ function dropPiece(e: React.MouseEvent){
 					<Tile key={`${x},${y}`} isEven={isEven} image={img} highlight={highlight} capture={capture} onClick={handleClick}/> 
 			)
 		}
-	}       
+	}
 
 
 	return(
@@ -395,13 +459,31 @@ function dropPiece(e: React.MouseEvent){
 			</div>
 		</div>
 
-		<div 
-			onMouseMove={(e)=>movePiece(e)} 
-			onMouseDown={e=> grabPiece(e)} 
-			onMouseUp={(e)=> dropPiece(e)}
-			id="chessboard"
-			ref={chessboardRef}>
-				{board}
+		<div className="board-layout">
+
+			{/* timer panel */}
+			{(online?.status === 'playing') && (
+			<div className="timer-panel">
+				<div className={`timer-block ${currentTurn==='black' ? 'active' : ''}`}>
+					<div className="timer-label">Black</div>
+					<div className="timer-value">{formatTime(blackTimeLeft)}</div>
+				</div>
+				<div className={`timer-block ${currentTurn==='white' ? 'active' : ''}`}>
+					<div className="timer-label">White</div>
+					<div className="timer-value">{formatTime(whiteTimeLeft)}</div>
+				</div>
+			</div>
+			)}
+
+
+			<div 
+				onMouseMove={(e)=>movePiece(e)} 
+				onMouseDown={e=> grabPiece(e)} 
+				onMouseUp={(e)=> dropPiece(e)}
+				id="chessboard"
+				ref={chessboardRef}>
+					{board}
+			</div>
 		</div>
 		</>
 	)

@@ -14,6 +14,49 @@
 background-color: black;
 }
 
+.board-layout{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 16px;
+}
+
+.timer-panel{
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin: 0;
+	width: 120px;
+	min-width: 120px;
+}
+
+.timer-block{
+	background: rgba(255,255,255,0.06);
+	border: 1px solid #333;
+	border-radius: 8px;
+	padding: 10px;
+	color: #fff;
+	text-align: center;
+}
+
+.timer-block.active{
+	border-color: #2f66ff;
+	box-shadow: 0 0 0 2px rgba(47,102,255,0.15);
+}
+
+.timer-label{
+	font-size: 12px;
+	opacity: 0.8;
+	margin-bottom: 6px;
+}
+
+.timer-value{
+	font-size: 22px;
+	font-weight: 800;
+	letter-spacing: 0.5px;
+}
+
 
 #pawn-promotion-modal > .modal-body{
 	height:150;

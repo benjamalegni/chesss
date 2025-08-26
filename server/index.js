@@ -12,7 +12,7 @@ const io = new Server(server, {
 
 let waitingSocketId = null; // socket.id of the player waiting for quick match
 const rooms = new Map(); // roomId -> { white: socketId, black: socketId }
-const privateWaiting = new Map(); // roomId -> socketId (creator waiting for join)
+const privateWaiting = new Map(); // roomId -> { socketId, timeLimitSeconds }
 
 function genId(){
 	return Math.random().toString(36).slice(2, 10);
@@ -40,7 +40,8 @@ io.on('connection', (socket) => {
 			rooms.delete(roomId);
 		}
 		// If creator was waiting in private room
-		if(privateWaiting.get(roomId) === socket.id){
+		const waiting = privateWaiting.get(roomId);
+		if(waiting && waiting.socketId === socket.id){
 			privateWaiting.delete(roomId);
 		}
 		socket.leave(roomId);
@@ -55,11 +56,12 @@ io.on('connection', (socket) => {
 			waitingSocketId = null;
 			if(!first) return;
 			const roomId = genId();
+			const timeLimitSeconds = 300;
 			rooms.set(roomId, { white: first.id, black: socket.id });
 			first.data.roomId = roomId; first.data.color = 'white'; first.join(roomId);
 			socket.data.roomId = roomId; socket.data.color = 'black'; socket.join(roomId);
-			safeEmit(first, 'start', { roomId, color: 'white' });
-			safeEmit(socket, 'start', { roomId, color: 'black' });
+			safeEmit(first, 'start', { roomId, color: 'white', timeLimitSeconds });
+			safeEmit(socket, 'start', { roomId, color: 'black', timeLimitSeconds });
 		} else {
 			const roomId = genId();
 			waitingSocketId = socket.id;
@@ -76,11 +78,12 @@ io.on('connection', (socket) => {
 			waitingSocketId = null;
 			if(!first) return;
 			const roomId = first.data.roomId || genId();
+			const timeLimitSeconds = 300;
 			rooms.set(roomId, { white: first.id, black: socket.id });
 			first.data.roomId = roomId; first.data.color = 'white'; first.join(roomId);
 			socket.data.roomId = roomId; socket.data.color = 'black'; socket.join(roomId);
-			safeEmit(first, 'start', { roomId, color: 'white' });
-			safeEmit(socket, 'start', { roomId, color: 'black' });
+			safeEmit(first, 'start', { roomId, color: 'white', timeLimitSeconds });
+			safeEmit(socket, 'start', { roomId, color: 'black', timeLimitSeconds });
 		} else {
 			const roomId = genId();
 			waitingSocketId = socket.id;
@@ -90,12 +93,13 @@ io.on('connection', (socket) => {
 		}
 	});
 
-	socket.on('create_room', () => {
+	socket.on('create_room', (payload = {}) => {
 		let roomId;
 		do { roomId = genId(); } while (rooms.has(roomId) || privateWaiting.has(roomId));
 		socket.data.roomId = roomId;
 		socket.data.color = 'white';
-		privateWaiting.set(roomId, socket.id);
+		const timeLimitSeconds = Number(payload.timeLimitSeconds) > 0 ? Number(payload.timeLimitSeconds) : 300;
+		privateWaiting.set(roomId, { socketId: socket.id, timeLimitSeconds });
 		socket.join(roomId);
 		safeEmit(socket, 'room_created', { roomId });
 	});
@@ -106,7 +110,8 @@ io.on('connection', (socket) => {
 			safeEmit(socket, 'error', { error: 'room_not_found' });
 			return;
 		}
-		const firstId = privateWaiting.get(roomId);
+		const waitingEntry = privateWaiting.get(roomId);
+		const firstId = waitingEntry && waitingEntry.socketId;
 		if(!firstId || firstId === socket.id){
 			safeEmit(socket, 'error', { error: 'room_not_found' });
 			return;
@@ -118,10 +123,11 @@ io.on('connection', (socket) => {
 			safeEmit(socket, 'error', { error: 'room_not_found' });
 			return;
 		}
+		const timeLimitSeconds = waitingEntry?.timeLimitSeconds || 300;
 		first.data.roomId = roomId; first.data.color = 'white'; first.join(roomId);
 		socket.data.roomId = roomId; socket.data.color = 'black'; socket.join(roomId);
-		safeEmit(first, 'start', { roomId, color: 'white' });
-		safeEmit(socket, 'start', { roomId, color: 'black' });
+		safeEmit(first, 'start', { roomId, color: 'white', timeLimitSeconds });
+		safeEmit(socket, 'start', { roomId, color: 'black', timeLimitSeconds });
 	});
 
 	socket.on('move', (payload) => {
