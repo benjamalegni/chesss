@@ -141,6 +141,8 @@
 	flex-direction: row;
 	align-items: flex-start;
 	justify-content: center;
+	gap: 12px;
+	align-self: stretch;
 }
 
 .game-container .board-wrapper{

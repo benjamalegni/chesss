@@ -35,293 +35,217 @@ export interface Piece{
     possibleMoves?: Position[];
 }
 
+function withPublicUrl(relativePath: string): string{
+    const prefix = (process.env.PUBLIC_URL ?? '').replace(/\/$/, '');
+    const rel = relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
+    return `${prefix}${rel}`;
+}
+
+// Helper to build stable image paths using PUBLIC_URL
+function imagePathFor(type: PieceType, team: TeamType): string{
+    const teamCode = team === TeamType.OUR ? 'w' : 'b';
+    let name = '';
+    switch(type){
+        case PieceType.PAWN: name = 'pawn'; break;
+        case PieceType.BISHOP: name = 'bishop'; break;
+        case PieceType.KNIGHT: name = 'knight'; break;
+        case PieceType.ROOK: name = 'rook'; break;
+        case PieceType.QUEEN: name = 'queen'; break;
+        case PieceType.KING: name = 'king'; break;
+    }
+    return withPublicUrl(`assets/images/${name}_${teamCode}.svg`);
+}
+
 export const initialBoardState: Piece[] = [
-    
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_b.svg`,
-        position:{
-            x:0,
-            y:6,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OPPONENT),
+        position:{ x:0, y:6 },
         type: PieceType.PAWN,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_b.svg`,
-        position:{
-            x:1,
-            y:6,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OPPONENT),
+        position:{ x:1, y:6 },
         type: PieceType.PAWN,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_b.svg`,
-        position:{
-            x:2,
-            y:6,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OPPONENT),
+        position:{ x:2, y:6 },
         type: PieceType.PAWN,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_b.svg`,
-        position:{
-            x:3,
-            y:6,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OPPONENT),
+        position:{ x:3, y:6 },
         type: PieceType.PAWN,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_b.svg`,
-        position:{
-            x:4,
-            y:6,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OPPONENT),
+        position:{ x:4, y:6 },
         type: PieceType.PAWN,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_b.svg`,
-        position:{
-            x:5,
-            y:6,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OPPONENT),
+        position:{ x:5, y:6 },
         type: PieceType.PAWN,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_b.svg`,
-        position:{
-            x:6,
-            y:6,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OPPONENT),
+        position:{ x:6, y:6 },
         type: PieceType.PAWN,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_b.svg`,
-        position:{
-            x:7,
-            y:6,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OPPONENT),
+        position:{ x:7, y:6 },
         type: PieceType.PAWN,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/rook_b.svg`,
-        position:{
-            x:0,
-            y:7,
-        },
+        image: imagePathFor(PieceType.ROOK, TeamType.OPPONENT),
+        position:{ x:0, y:7 },
         type: PieceType.ROOK,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/knight_b.svg`,
-        position:{
-            x:1,
-            y:7,
-        },
+        image: imagePathFor(PieceType.KNIGHT, TeamType.OPPONENT),
+        position:{ x:1, y:7 },
         type: PieceType.KNIGHT,
         team: TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/bishop_b.svg`,
-        position:{
-            x:2,
-            y:7,
-        },
+        image: imagePathFor(PieceType.BISHOP, TeamType.OPPONENT),
+        position:{ x:2, y:7 },
         type:PieceType.BISHOP,
         team:TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/queen_b.svg`,
-        position:{
-            x:3,
-            y:7,
-        },
+        image: imagePathFor(PieceType.QUEEN, TeamType.OPPONENT),
+        position:{ x:3, y:7 },
         type:PieceType.QUEEN,
         team:TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/king_b.svg`,
-        position:{
-            x:4,
-            y:7,
-        },
+        image: imagePathFor(PieceType.KING, TeamType.OPPONENT),
+        position:{ x:4, y:7 },
         type:PieceType.KING,
         team:TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/bishop_b.svg`,
-        position:{
-            x:5,
-            y:7,
-        },
+        image: imagePathFor(PieceType.BISHOP, TeamType.OPPONENT),
+        position:{ x:5, y:7 },
         type:PieceType.BISHOP,
         team:TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/knight_b.svg`,
-        position:{
-            x:6,
-            y:7,
-        },
+        image: imagePathFor(PieceType.KNIGHT, TeamType.OPPONENT),
+        position:{ x:6, y:7 },
         type:PieceType.KNIGHT,
         team:TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/rook_b.svg`,
-        position:{
-            x:7,
-            y:7,
-        },
+        image: imagePathFor(PieceType.ROOK, TeamType.OPPONENT),
+        position:{ x:7, y:7 },
         type:PieceType.ROOK,
         team:TeamType.OPPONENT,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/rook_w.svg`,
-        position:{
-            x:0,
-            y:0,
-        },
+        image: imagePathFor(PieceType.ROOK, TeamType.OUR),
+        position:{ x:0, y:0 },
         type: PieceType.ROOK,
         team: TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/knight_w.svg`,
-        position:{
-            x:1,
-            y:0,
-        },
+        image: imagePathFor(PieceType.KNIGHT, TeamType.OUR),
+        position:{ x:1, y:0 },
         type: PieceType.KNIGHT,
         team: TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/bishop_w.svg`,
-        position:{
-            x:2,
-            y:0,
-        },
+        image: imagePathFor(PieceType.BISHOP, TeamType.OUR),
+        position:{ x:2, y:0 },
         type:PieceType.BISHOP,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/queen_w.svg`,
-        position:{
-            x:3,
-            y:0,
-        },
+        image: imagePathFor(PieceType.QUEEN, TeamType.OUR),
+        position:{ x:3, y:0 },
         type:PieceType.QUEEN,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/king_w.svg`,
-        position:{
-            x:4,
-            y:0,
-        },
+        image: imagePathFor(PieceType.KING, TeamType.OUR),
+        position:{ x:4, y:0 },
         type:PieceType.KING,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/bishop_w.svg`,
-        position:{
-            x:5,
-            y:0,
-        },
+        image: imagePathFor(PieceType.BISHOP, TeamType.OUR),
+        position:{ x:5, y:0 },
         type:PieceType.BISHOP,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/knight_w.svg`,
-        position:{
-            x:6,
-            y:0,
-        },
+        image: imagePathFor(PieceType.KNIGHT, TeamType.OUR),
+        position:{ x:6, y:0 },
         type:PieceType.KNIGHT,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/rook_w.svg`,
-        position:{
-            x:7,
-            y:0,
-        },
+        image: imagePathFor(PieceType.ROOK, TeamType.OUR),
+        position:{ x:7, y:0 },
         type:PieceType.ROOK,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_w.svg`,
-        position:{
-            x:0,
-            y:1,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OUR),
+        position:{ x:0, y:1 },
         type:PieceType.PAWN,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_w.svg`,
-        position:{
-            x:1,
-            y:1,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OUR),
+        position:{ x:1, y:1 },
         type:PieceType.PAWN,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_w.svg`,
-        position:{
-            x:2,
-            y:1,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OUR),
+        position:{ x:2, y:1 },
         type:PieceType.PAWN,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_w.svg`,
-        position:{
-            x:3,
-            y:1,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OUR),
+        position:{ x:3, y:1 },
         type:PieceType.PAWN,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_w.svg`,
-        position:{
-            x:4,
-            y:1,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OUR),
+        position:{ x:4, y:1 },
         type:PieceType.PAWN,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_w.svg`,
-        position:{
-            x:5,
-            y:1,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OUR),
+        position:{ x:5, y:1 },
         type:PieceType.PAWN,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_w.svg`,
-        position:{
-            x:6,
-            y:1,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OUR),
+        position:{ x:6, y:1 },
         type:PieceType.PAWN,
         team:TeamType.OUR,
     },
     {
-        image: `${process.env.PUBLIC_URL}/assets/images/pawn_w.svg`,
-        position:{
-            x:7,
-            y:1,
-        },
+        image: imagePathFor(PieceType.PAWN, TeamType.OUR),
+        position:{ x:7, y:1 },
         type:PieceType.PAWN,
         team:TeamType.OUR,
     },

@@ -498,8 +498,8 @@ function dropPiece(e: React.MouseEvent){
 				id="chessboard"
 				ref={chessboardRef}>
 					{board}
-				</div>
 			</div>
-			</>
+		</div>
+		</>
 	)
 }
