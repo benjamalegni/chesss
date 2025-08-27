@@ -314,6 +314,10 @@ function grabPiece(e: React.MouseEvent){
 		element.style.left = `${x}px`;
 		element.style.top = `${y}px`;
 		element.style.zIndex = '1000';
+		// Lock the dragged image size to match the tile to avoid zoom/stretch
+		const dragSize = Math.round(tileSize * 0.85);
+		element.style.width = `${dragSize}px`;
+		element.style.height = `${dragSize}px`;
 
 		setActivePiece(element);
 	}
@@ -364,6 +368,8 @@ function dropPiece(e: React.MouseEvent){
 		activePiece.style.removeProperty("top");
 		activePiece.style.removeProperty("left");
 		activePiece.style.removeProperty("z-index");
+		activePiece.style.removeProperty("width");
+		activePiece.style.removeProperty("height");
 		setActivePiece(null);
 	}
 }
